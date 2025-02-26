@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +12,7 @@ import { Role } from './role/entities/role.entity';
 import { Permission } from './permission/entities/permission.entity';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -16,7 +20,7 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
     type: 'postgres',
-    host:'localhost',
+    host:process.env.DB_HOST,
    
     port: 5432,
     username: 'postgres',
@@ -25,7 +29,8 @@ import { UserModule } from './user/user.module';
     //entities: [Role,Permission],
     autoLoadEntities: true,
     synchronize: true,
-  }),RestaurantModule, UserModule, RoleModule, PermissionModule],
+    //logging: true,
+  }),RestaurantModule, UserModule, RoleModule, PermissionModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })  
