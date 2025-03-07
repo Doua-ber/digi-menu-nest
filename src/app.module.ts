@@ -13,6 +13,13 @@ import { Permission } from './permission/entities/permission.entity';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ClientModule } from './client/client.module';
+import { CommandeModule } from './commande/commande.module';
+import { AdminModule } from './admin/admin.module';
+import { ManagerModule } from './manager/manager.module';
+import { CategorieModule } from './categorie/categorie.module';
+import { ProduitModule } from './produit/produit.module';
+import { RubriqueModule } from './rubrique/rubrique.module';
 
 
 @Module({
@@ -30,7 +37,7 @@ import { AuthModule } from './auth/auth.module';
     autoLoadEntities: true,
     synchronize: true,
     //logging: true,
-  }),RestaurantModule, UserModule, RoleModule, PermissionModule, AuthModule],
+  }),RestaurantModule, UserModule, RoleModule, PermissionModule, AuthModule, ClientModule, CommandeModule, AdminModule, ManagerModule, CategorieModule, ProduitModule, RubriqueModule],
   controllers: [AppController],
   providers: [AppService],
 })  

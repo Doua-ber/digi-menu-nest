@@ -24,7 +24,7 @@ export class AuthService {
     if (userExists) {
       throw new UnauthorizedException('Email déjà utilisé');
     }
-
+ 
     // Hachage du mot de passe
     const hashedPassword = await bcrypt.hash(motDePasse, 10);
 

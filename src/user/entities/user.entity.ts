@@ -1,13 +1,12 @@
-
-
 import { Role } from "src/role/entities/role.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
+
 @Entity('users')
+
 export class User {
-    @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
-  
   @Column()
   nom: string;
 
@@ -18,11 +17,9 @@ export class User {
   motDePasse: string;
 
   @CreateDateColumn({ type: "timestamp" })
-    createdAt: Date;
+  createdAt: Date;
 
-    @ManyToOne(() => Role, (role) => role.users)
-    @JoinColumn({ name: 'roleId' }) 
-    role: Role;
-
-  
+  @ManyToOne(() => Role, (role) => role.users)
+  @JoinColumn({ name: 'roleId' })
+  role: Role;
 }
