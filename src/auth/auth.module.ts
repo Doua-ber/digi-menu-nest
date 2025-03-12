@@ -1,24 +1,25 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { UserModule } from 'src/user/user.module';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Manager } from 'src/manager/entities/manager.entity';
 import { JwtStrategy } from './jwt.strategy';
+import { User } from 'src/user/entities/user.entity';
+import { Admin } from 'src/admin/entities/admin.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }), // Initialisation correcte de Passport
     JwtModule.register({
-      secret: "07e15142e4820f1aaea9c2502e93cc4c0595b3713f8adb9bcdb723852cbaed16e08891665fc6aac99760769161c68373248b542fc9bfeee444849e96fe2c7369",
-      signOptions: { expiresIn: '60m' },
+      secret: 'c16e2ca7ba8cede8d69b58f8b48eb3bb8e05d92bce2744cb11b68f7e7faf37c1dba49d15d477e6f3d77db0bbac96c287215257ec97507df84e29e387cd890de6', // Doit correspondre à la clé utilisée dans JwtStrategy
+      signOptions: { expiresIn: '1h' },
     }),
-    UserModule,
+    TypeOrmModule.forFeature([User, Manager, Admin]),
   ],
-  controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-}) 
+  controllers: [AuthController],
+  exports: [AuthService, JwtModule],
+})
 export class AuthModule {}

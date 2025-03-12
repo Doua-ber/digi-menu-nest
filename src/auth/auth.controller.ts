@@ -1,28 +1,20 @@
-import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
+import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { LoginDto } from 'src/auth/dto/login.dto';
 import { AuthService } from './auth.service';
-import { SignupDto } from './dto/SignupDto';
-import { LoginDto } from './dto/login.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from './jwt-auth.guard';
-
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
-
-  @Post('signup')
-  signup(@Body() signupDto: SignupDto) {
-    return this.authService.signup(signupDto);
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+async login(@Body() loginDto: LoginDto) {
+  const user = await this.authService.validateUser(loginDto.email, loginDto.motDePasse);
+
+  if (!user) { 
+    throw new UnauthorizedException('Email ou mot de passe incorrect');
   }
-  @UseGuards(JwtAuthGuard)  // Applique le garde JWT
-  @Get('profile')
-  async getProfile(@Request() req) {
-    const userId = req.user.id;  // Le userId est ajouté au request par le JWT Guard
-    return this.authService.getProfile(userId);
-  }
+
+  return this.authService.login(user); // ✅ Retourne user + token
+}
+
 }

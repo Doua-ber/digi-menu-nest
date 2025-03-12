@@ -1,6 +1,6 @@
-import { Client } from "src/client/entities/client.entity";
-import { Manager } from "src/manager/entities/manager.entity";
-import { Restaurant } from "src/restaurant/entities/restaurant.entity";
+import { Client } from "../../client/entities/client.entity";
+import { Manager } from "../../manager/entities/manager.entity";
+import { Restaurant } from "../../restaurant/entities/restaurant.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('commandes')

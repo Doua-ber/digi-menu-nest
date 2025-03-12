@@ -1,5 +1,5 @@
-import { Restaurant } from "src/restaurant/entities/restaurant.entity";
-import { Rubrique } from "src/rubrique/entities/rubrique.entity";
+import { Restaurant } from "../../restaurant/entities/restaurant.entity";
+import { Rubrique } from "../../rubrique/entities/rubrique.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity("produits")

@@ -1,8 +1,8 @@
-import { Admin } from "src/admin/entities/admin.entity";
-import { Categorie } from "src/categorie/entities/categorie.entity";
-import { Commande } from "src/commande/entities/commande.entity";
-import { Manager } from "src/manager/entities/manager.entity";
-import { Produit } from "src/produit/entities/produit.entity";
+import { Admin } from "../../admin/entities/admin.entity";
+import { Categorie } from "../../categorie/entities/categorie.entity";
+import { Commande } from "../../commande/entities/commande.entity";
+import { Manager } from "../../manager/entities/manager.entity";
+import { Produit } from "../../produit/entities/produit.entity";
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity("restaurants")

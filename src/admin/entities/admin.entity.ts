@@ -1,8 +1,8 @@
-import { Restaurant } from "src/restaurant/entities/restaurant.entity";
-import { User } from "src/user/entities/user.entity";
-import { Entity, Column, ManyToMany, JoinTable } from "typeorm";
+import { Restaurant } from "../../restaurant/entities/restaurant.entity";
+import { User } from "../../user/entities/user.entity";
+import { Entity, Column, ManyToMany, JoinTable, ChildEntity } from "typeorm";
 
-@Entity("admins")
+@ChildEntity() 
 export class Admin extends User {
   @Column({ default: true })
   isAdmin: boolean;

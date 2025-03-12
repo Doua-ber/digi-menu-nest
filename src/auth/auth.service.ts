@@ -1,83 +1,76 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { SignupDto } from './dto/SignupDto';
-import { LoginDto } from './dto/login.dto';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
-
+import { Repository } from 'typeorm';
+import { Manager } from 'src/manager/entities/manager.entity';
+import { Admin } from 'src/admin/entities/admin.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
+    @InjectRepository(Manager)
+    private readonly managerRepository: Repository<Manager>,
+    @InjectRepository(Admin)
+    private readonly adminRepository: Repository<Admin>,
   ) {}
 
-  async signup(signupDto: SignupDto): Promise<User> {
-    const { nom, email, motDePasse } = signupDto;
-
-    // Vérifier si l'utilisateur existe déjà
-    const userExists = await this.userRepository.findOne({ where: { email } });
-    if (userExists) {
-      throw new UnauthorizedException('Email déjà utilisé');
-    }
- 
-    // Hachage du mot de passe
-    const hashedPassword = await bcrypt.hash(motDePasse, 10);
-
-    // Création de l'utilisateur
-    const user = this.userRepository.create({
-      nom,
-      email,
-      motDePasse: hashedPassword,
-    });
-
-    return this.userRepository.save(user);
-  }
-
-  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
-    const { email, motDePasse } = loginDto;
-    const user = await this.userRepository.findOne({ where: { email } });
-
-    if (!user || !(await bcrypt.compare(motDePasse, user.motDePasse))) {
-      throw new UnauthorizedException('Email ou mot de passe incorrect');
-    }
-
-    const payload = { id: user.id, email: user.email };
-    const access_token = this.jwtService.sign(payload);
-
-    return { access_token };
-  }
-
-  async getProfile(userId: number) {
-    // Charger l'utilisateur avec son rôle et les permissions du rôle
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['role', 'role.permissions'], // Charger les permissions à travers le rôle
+  async validateUser(email: string, pass: string): Promise<Manager | Admin | null> {
+    let user: Manager | Admin | null = await this.managerRepository.findOne({
+      where: { email },
+      relations: ['role', 'role.permissions'], // Récupère les permissions du rôle
     });
   
     if (!user) {
-      throw new UnauthorizedException('Utilisateur non trouvé');
+      user = await this.adminRepository.findOne({
+        where: { email },
+        relations: ['role', 'role.permissions'],
+      }) as Admin | null;
     }
   
-    // Récupérer les permissions associées au rôle de l'utilisateur
-    const permissions = user.role?.permissions || []; // Utilisation de l'opérateur de coalescence nulle
+    if (!user) {
+      console.log('Utilisateur introuvable');
+      return null;
+    }
+    console.log('Utilisateur trouvé :', user);
+console.log('Rôle de l’utilisateur :', user?.role);
+console.log('Permissions de ce rôle :', user?.role?.permissions);
+
+ 
   
-    // Mapper les permissions pour obtenir le titre en anglais et en arabe
-    const permissionsWithTitles = permissions.map(permission => ({
-      titleEng: permission?.titleEng || 'Title not available',
-      titleAr: permission?.titleAr || 'Title not available',
-    }));
+    const isMatch = await bcrypt.compare(pass, user.motDePasse);
+    if (!isMatch) return null;
   
-    return {
-      id: user.id,
-      name: user.nom,
-      email: user.email,
-      role: user.role ? user.role.titleEng : 'No role', // Assurez-vous que le rôle existe
-      permissions: permissionsWithTitles, // Retourne les permissions formatées
-    };
+    return user;
   }
-    }
+  
+  
+  
+
+login(user: Manager | Admin) {
+  console.log('User au login:', user);
+
+  const payload = {
+    sub: user.id,
+    roleId: user.role.id,
+    permissions: user.role.permissions.map((p) => p.titleEng),
+  };
+
+  console.log('Token payload dans auth service:', payload);
+  
+
+  return {
+    access_token: this.jwtService.sign(payload, { expiresIn: '1h' }), 
+
+    user: {
+      id: user.id,
+      nom: user.nom,
+      email: user.email,
+      role: user.role.titleEng,
+      permissions: user.role.permissions.map((p) => p.titleEng),
+    },
+  };
+}
+
+}

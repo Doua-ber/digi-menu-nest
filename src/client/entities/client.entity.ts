@@ -1,4 +1,4 @@
-import { Commande } from "src/commande/entities/commande.entity";
+import { Commande } from "../../commande/entities/commande.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('clients')
