@@ -14,9 +14,11 @@ export class CreateUserDto {
   @IsString()
   motDePasse: string;
 
-  
-
   @IsNotEmpty()
   @IsInt()
-  roleId: number; 
+  roleId: number;
+
+  @IsOptional() // Ce champ est facultatif
+  @IsString()
+  type: string; // 'manager' ou 'user' selon l'entité
 }

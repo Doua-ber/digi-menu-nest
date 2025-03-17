@@ -1,5 +1,6 @@
+import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { Role } from '../../role/entities/role.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 
 @Entity('users')
 @TableInheritance({ column: { type: 'varchar', name: 'type' } }) 
@@ -22,4 +23,7 @@ export class User {
   @ManyToOne(() => Role, (role) => role.users, { eager: true })
   @JoinColumn({ name: 'roleId' })
   role: Role;
+
+  
+  
 }

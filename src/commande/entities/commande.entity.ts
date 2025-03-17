@@ -30,5 +30,6 @@ export class Commande {
     restaurant: Restaurant;
     @ManyToOne(() => Manager, manager => manager.commandes)
     managers: Manager[];
+    
       
 }

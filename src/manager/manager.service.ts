@@ -42,10 +42,16 @@ export class ManagerService {
         });
       
       
-        const manager = this.managerRepository.create({
-          ...createManagerDto,
-          role: role, // Association correcte du rôle ✅
-        });
+      
+        // Créer un manager
+const manager = this.managerRepository.create({
+  ...createManagerDto,
+  role: role, // Assurez-vous que le rôle est bien affecté
+  isOwner: createManagerDto.isOwner || false,
+});
+
+
+
       
         // Sauvegarde le Manager
         return await this.managerRepository.save(manager);

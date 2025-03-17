@@ -10,6 +10,7 @@ import { Manager } from 'src/manager/entities/manager.entity';
   imports: [TypeOrmModule.forFeature([User, Admin, Manager])],
   controllers: [UserController],
   providers: [UserService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule,UserService],
+  
 })
 export class UserModule {}
