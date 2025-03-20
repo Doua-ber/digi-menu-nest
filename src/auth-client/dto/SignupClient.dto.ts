@@ -4,6 +4,10 @@ export class SignupClientDto {
   @IsNotEmpty()
   nom: string;
 
+
+  @IsNotEmpty()
+  prenom: string;
+
   @IsEmail()
   email: string;
 

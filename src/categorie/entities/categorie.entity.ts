@@ -1,3 +1,4 @@
+import { RestaurantRequest } from "../../restaurant-request/entities/restaurant-request.entity";
 import { Restaurant } from "../../restaurant/entities/restaurant.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -13,6 +14,12 @@ export class Categorie {
       nomAr: string;
       @OneToMany(() => Restaurant, restaurant => restaurant.categorie)
     restaurants: Restaurant[];
+    
+    @OneToMany(() => RestaurantRequest, restaurantRequests => restaurantRequests.categorie)
+    restaurantRequests: RestaurantRequest[];
+
+
+    
 }
 
 

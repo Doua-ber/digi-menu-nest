@@ -8,11 +8,16 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  
   @Column({ nullable: false }) 
   nom: string;
 
+@Column({ nullable: false })
+prenom: string;
+
+
   @Column({ nullable: false }) 
-  email: string;
+    email: string;
 
   @Column({ nullable: false }) 
   motDePasse: string;

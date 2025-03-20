@@ -1,5 +1,6 @@
+import { Categorie } from "../../categorie/entities/categorie.entity";
 import { Manager } from "../../manager/entities/manager.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 @Entity("restaurant_requests")
 export class RestaurantRequest {
   @PrimaryGeneratedColumn()
@@ -7,6 +8,8 @@ export class RestaurantRequest {
 
   @Column()
   nom: string;
+@Column()
+prenom: string;
 
   @Column()
   email: string;
@@ -23,6 +26,13 @@ export class RestaurantRequest {
   @Column()
   adresseAr: string;
 
+  
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  validatedAt: Date | null;
+
   @Column({ default: false })
   isApproved: boolean; // demande est approuvée ou nn
 
@@ -31,4 +41,10 @@ export class RestaurantRequest {
   @ManyToOne(() => Manager, (manager) => manager.restaurantRequests)
   @JoinColumn({ name: 'managerId' })
   manager: Manager; // Le manager qui a fait la demande
+
+  @ManyToOne(() => Categorie, (categorie) => categorie.restaurantRequests)
+  @JoinColumn({ name: 'categorieId' })
+  categorie: Categorie;
+
+
 }

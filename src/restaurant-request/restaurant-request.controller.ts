@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, NotFoundException, Req, UnauthorizedException } from '@nestjs/common';
 import { RestaurantRequestService } from './restaurant-request.service';
-import { CreateRestaurantRequestDto } from './dto/create-restaurant-request.dto';
 import { UpdateRestaurantRequestDto } from './dto/update-restaurant-request.dto';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -45,15 +44,18 @@ export class RestaurantRequestController {
   async createRequest(
     @Body() data: {
       nom: string,
+      prenom: string,
       email: string,
       motDePasse: string,
       nomRestaurant: string,
       adresseEng: string,
       adresseAr: string,
+      categorieId : number
+      
     },
     @Req() req: Request,
   ): Promise<RestaurantRequest> {
-    return this.restaurantRequestService.createRequest( data);
+    return this.restaurantRequestService.createRequest(data);
   }
 
   @Post(':id/approve')

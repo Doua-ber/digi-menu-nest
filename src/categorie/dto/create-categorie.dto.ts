@@ -1,1 +1,4 @@
-export class CreateCategorieDto {}
+export class CreateCategorieDto {
+    nomEng: string;
+  nomAr: string;
+}

@@ -8,6 +8,8 @@ async function bootstrap() {
   console.log(ormconfig.options);
 
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Digital Menu API')
     .setDescription('API documentation for Digital Menu')

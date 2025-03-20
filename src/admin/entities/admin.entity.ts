@@ -5,7 +5,8 @@ import { Entity, Column, ManyToMany, JoinTable, ChildEntity, OneToMany } from "t
 
 @ChildEntity() 
 export class Admin extends User {
-  @Column({ default: true })
+  
+  @Column({ default: false })
   isAdmin: boolean;
 
   @ManyToMany(() => Restaurant, (restaurant) => restaurant.admins)

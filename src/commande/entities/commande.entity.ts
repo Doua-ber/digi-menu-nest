@@ -17,7 +17,7 @@ export class Commande {
       statut: string;
     
       @Column()
-      livraison: boolean;
+      isDelivered: boolean;
     
       @CreateDateColumn({ type: "timestamp" })
         createdAt: Date;

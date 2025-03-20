@@ -10,8 +10,8 @@ import { JwtAuthGuard } from 'src/auth/JwtAuthGuard';
 export class ManagerController {
   constructor(private readonly managerService: ManagerService) {}
   @Post()
-@UseGuards(JwtAuthGuard, PermissionsGuard)
-@Permissions('add manager')
+//@UseGuards(JwtAuthGuard, PermissionsGuard)
+//@Permissions('add manager')
 
 create(@Body() createManagerDto: CreateManagerDto) {
   return this.managerService.create(createManagerDto);

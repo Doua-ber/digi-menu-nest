@@ -18,7 +18,7 @@ export class AuthClientService {
       ) {}
     
       async signup(signupDto: SignupClientDto): Promise<Client> {
-        const { nom, email, motDePasse } = signupDto;
+        const { nom, prenom, email, motDePasse } = signupDto;
     
         // Vérifier si l'utilisateur existe déjà
         const clientExists = await this.clientRepository.findOne({ where: { email } });
@@ -32,6 +32,7 @@ export class AuthClientService {
         // Création de l'utilisateur
         const client = this.clientRepository.create({
           nom,
+          prenom,
           email,
           motDePasse: hashedPassword,
         });
@@ -68,7 +69,8 @@ export class AuthClientService {
       
         return {
           id: client.id,
-          name: client.nom,
+          name: client.nom + client.prenom,
+
           email: client.email,
         };
       }

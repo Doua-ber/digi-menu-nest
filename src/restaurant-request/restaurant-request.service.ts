@@ -5,10 +5,9 @@ import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { Repository } from 'typeorm';
 import { RestaurantRequest } from './entities/restaurant-request.entity';
 import { ManagerService } from 'src/manager/manager.service';
-import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcryptjs';
 import { CreateRestaurantRequestDto } from './dto/create-restaurant-request.dto';
+import { Categorie } from 'src/categorie/entities/categorie.entity';
 
 
 
@@ -20,11 +19,10 @@ export class RestaurantRequestService {
     private restaurantRequestRepository: Repository<RestaurantRequest>,
     @InjectRepository(Restaurant)
     private restaurantRepository: Repository<Restaurant>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(Categorie)
+    private categorieRepository: Repository<Categorie>,
     
     private readonly managerService: ManagerService,
-    private readonly userService: UserService,
 
   ) {}
   
@@ -45,19 +43,22 @@ export class RestaurantRequestService {
 
   // Créer une demande de création de restaurant
   async createRequest(data: CreateRestaurantRequestDto): Promise<RestaurantRequest> {
-    // Hacher le mot de passe
-    const saltRounds = 10; // Nombre de tours de hachage (plus c'est élevé, plus c'est sécurisé)
-    const hashedPassword = await bcrypt.hash(data.motDePasse, saltRounds);
+    // Vérifier si la catégorie existe
+    const categorie = await this.categorieRepository.findOne({ where: { id: data.categorieId } });
+    if (!categorie) {
+      throw new NotFoundException(`Catégorie avec l'ID ${data.categorieId} introuvable`);
+    }
   
-    // Créer la demande avec le mot de passe haché
+    // Créer la demande en associant la catégorie
     const request = this.restaurantRequestRepository.create({
       ...data,
-      motDePasse: hashedPassword, // Remplacer le mot de passe en clair par le mot de passe haché
+      categorie, // Assigner l'entité Categorie ici
     });
   
-    // Sauvegarder la demande dans la base de données
     return this.restaurantRequestRepository.save(request);
   }
+  
+  
 
   // Approuver une demande et créer le restaurant
   async approveRequest(requestId: number): Promise<{ message: string; restaurant?: Restaurant }> {
@@ -65,11 +66,16 @@ export class RestaurantRequestService {
     const request = await this.restaurantRequestRepository.findOne({
       where: { id: requestId },
     });
-  
+
     if (!request) {
-      return { message: 'ID introuvé' }; 
+      return { message: 'ID introuvé' };
     }
-  
+
+    // Marquer la demande comme approuvée
+    request.isApproved = true;
+    request.validatedAt = new Date(); // Date de validation
+    await this.restaurantRequestRepository.save(request); // Sauvegarder la demande mise à jour
+
     // Créer le restaurant
     const restaurant = this.restaurantRepository.create({
       nom: request.nomRestaurant,
@@ -77,35 +83,56 @@ export class RestaurantRequestService {
       adresseAr: request.adresseAr,
       qrCode: `QR_CODE_${request.nomRestaurant}_${Date.now()}`,
       isActive: true,
+      categorie: request.categorie
     });
-  
+
     // Sauvegarder le restaurant
     const savedRestaurant = await this.restaurantRepository.save(restaurant);
-  
+
     // Créer un manager
     const managerData = {
       nom: request.nom,
+      prenom: request.prenom,
       email: request.email,
       motDePasse: request.motDePasse,
-      roleId: 2, // ID du rôle Manager
+      roleId: 5, // ID du rôle Manager
       isOwner: true, // Définir isOwner
     };
-  
+
     const manager = await this.managerService.create(managerData);
-  
+
     // Associer le manager au restaurant
     savedRestaurant.managers = [manager];
     await this.restaurantRepository.save(savedRestaurant);
-  
-    // Supprimer la demande
-    await this.restaurantRequestRepository.remove(request);
-  
-    // Retourner un message de succès et les détails du restaurant
+
+    // Associer le manager à la demande (la relation Manager est établie ici)
+    request.manager = manager; // Associer directement l'objet Manager
+    await this.restaurantRequestRepository.save(request); // Mettre à jour la demande avec le manager
+
+    // Planifier la suppression après 15 jours de la validation
+    setTimeout(async () => {
+      const existingRequest = await this.restaurantRequestRepository.findOne({
+        where: { id: requestId },
+      });
+
+      if (existingRequest && existingRequest.validatedAt) {
+        const now = new Date();
+        const diffInMillis = now.getTime() - new Date(existingRequest.validatedAt).getTime();
+        const diffInDays = diffInMillis / (1000 * 3600 * 24); // Convertir en jours
+
+        if (diffInDays >= 15) {
+          await this.restaurantRequestRepository.remove(existingRequest);
+          console.log(`Demande ID ${requestId} supprimée après 15 jours de validation`);
+        }
+      }
+    }, 15 * 24 * 60 * 60 * 1000); // 15 jours en millisecondes
+
     return {
       message: 'Demande approuvée avec succès',
       restaurant: savedRestaurant,
     };
-  }
+}
+
   async rejectRequest(requestId: number): Promise<{ message: string }> {
     // Trouver la demande
     const request = await this.restaurantRequestRepository.findOne({

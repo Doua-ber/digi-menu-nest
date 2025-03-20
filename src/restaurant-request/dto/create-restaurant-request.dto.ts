@@ -1,9 +1,13 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateRestaurantRequestDto {
   @IsNotEmpty()
   @IsString()
   nom: string;
+
+  @IsNotEmpty()
+  @IsString()
+  prenom: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -24,4 +28,13 @@ export class CreateRestaurantRequestDto {
   @IsNotEmpty()
   @IsString()
   adresseAr: string;
+  
+  @IsNotEmpty()
+  @IsNumber()
+  categorieId: number;
+
+  /*@IsNotEmpty()
+  @IsNumber()
+  managerId: number;
+  */
 }

@@ -6,13 +6,17 @@ export class Client {
 
 @PrimaryGeneratedColumn()
   id: number;
-  @Column()
-    nom: string;
+  @Column({ nullable: false }) 
+  nom: string;
+
+  @Column({ nullable: false })
+prenom: string;
+
   
-    @Column()
+  @Column({ nullable: false }) 
     email: string;
   
-    @Column()
+    @Column({ nullable: false }) 
     motDePasse: string;
   
     @CreateDateColumn({ type: "timestamp" })

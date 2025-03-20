@@ -10,10 +10,11 @@ import { RestaurantModule } from 'src/restaurant/restaurant.module';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { UserService } from 'src/user/user.service';
 import { ManagerService } from 'src/manager/manager.service';
+import { Categorie } from 'src/categorie/entities/categorie.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RestaurantRequest,Restaurant,Manager,Role,User]),
+    TypeOrmModule.forFeature([RestaurantRequest,Restaurant,Manager,Role,User,Categorie]),
     RestaurantModule, 
   ],
   controllers: [RestaurantRequestController],

@@ -12,7 +12,7 @@ export class AdminGuard implements CanActivate {
       throw new ForbiddenException('Utilisateur non authentifié');
     }
 
-    if (user.role?.titleEng !== 'admin') {
+    if (user.role?.titleEng !== 'super admin') {
       throw new ForbiddenException('Accès réservé seulement aux administrateurs');
     }
 

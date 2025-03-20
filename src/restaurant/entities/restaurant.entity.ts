@@ -31,7 +31,7 @@ export class Restaurant {
   admins: Admin[];
 
   @ManyToMany(() => Manager, manager => manager.restaurants)
-    @JoinTable()
+    @JoinTable({ name: 'restaurants_managers' })
     managers: Manager[];
 
   @ManyToOne(() => Categorie, (categorie) => categorie.restaurants, { onDelete: "CASCADE" })
