@@ -1,3 +1,4 @@
+import { Ville } from "src/common/enums/ville.enum";
 import { Categorie } from "../../categorie/entities/categorie.entity";
 import { Manager } from "../../manager/entities/manager.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -19,6 +20,9 @@ prenom: string;
 
   @Column()
   nomRestaurant: string;
+
+  @Column({ type: "enum", enum: Ville })
+  ville: Ville;
 
   @Column()
   adresseEng: string;

@@ -8,27 +8,27 @@ export class RubriqueController {
   constructor(private readonly rubriqueService: RubriqueService) {}
 
   @Post()
-  create(@Body() createRubriqueDto: CreateRubriqueDto) {
-    return this.rubriqueService.create(createRubriqueDto);
+  async create(@Body() createRubriqueDto: CreateRubriqueDto) {
+    return await this.rubriqueService.create(createRubriqueDto);
   }
 
   @Get()
-  findAll() {
-    return this.rubriqueService.findAll();
+  async findAll() {
+    return await this.rubriqueService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rubriqueService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.rubriqueService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRubriqueDto: UpdateRubriqueDto) {
-    return this.rubriqueService.update(+id, updateRubriqueDto);
+  async update(@Param('id') id: string, @Body() updateRubriqueDto: UpdateRubriqueDto) {
+    return await this.rubriqueService.update(+id, updateRubriqueDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rubriqueService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.rubriqueService.remove(+id);
   }
 }

@@ -1,3 +1,4 @@
+import { Ville } from "src/common/enums/ville.enum";
 import { Admin } from "../../admin/entities/admin.entity";
 import { Categorie } from "../../categorie/entities/categorie.entity";
 import { Commande } from "../../commande/entities/commande.entity";
@@ -11,6 +12,9 @@ export class Restaurant {
 
   @Column()
   nom: string;
+
+  @Column({ type: "enum", enum: Ville })
+  ville: Ville;
 
   @Column()
   adresseEng: string;

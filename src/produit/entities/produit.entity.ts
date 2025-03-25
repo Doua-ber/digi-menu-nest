@@ -4,24 +4,28 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity("produits")
 export class Produit {
-@PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn()
       id: number;
-      @Column()
+    @Column()
       nomEng: string;
-      @Column()
+    @Column()
       nomAr: string;
-      
-        @Column("float")
-        prix: number;
-      
-        @Column()
+    @Column()
+      descEng: string;
+    @Column()
+      descAr: string;
+    @Column("float")
+        prix: number;  
+    @Column()
         image: string;
-        @Column()
+    @Column()
         stock: number;
-        @Column()
+    @Column()
         disponibilite: boolean;
-        @ManyToOne(() => Rubrique, rubrique => rubrique.produits, { onDelete: "CASCADE" })
-        rubriques: Rubrique;
-        @ManyToOne(() => Restaurant, restaurant => restaurant.produits, { onDelete: "CASCADE" })
-restaurant: Restaurant;
+    @ManyToOne(() => Rubrique, rubrique => rubrique.produits, { onDelete: "CASCADE" })
+        rubrique: Rubrique;
+    @ManyToOne(() => Restaurant, restaurant => restaurant.produits, { onDelete: "CASCADE" })
+        restaurant: Restaurant;
 }
+
+

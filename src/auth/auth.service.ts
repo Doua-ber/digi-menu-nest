@@ -19,7 +19,7 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<Manager | Admin | null> {
     let user: Manager | Admin | null = await this.managerRepository.findOne({
       where: { email },
-      relations: ['role', 'role.permissions'], // Récupère les permissions du rôle
+      relations: ['role', 'role.permissions'], 
     });
   
     if (!user) {
@@ -28,6 +28,7 @@ export class AuthService {
         relations: ['role', 'role.permissions'],
       }) as Admin | null;
     }
+    
   
     if (!user) {
       console.log('Utilisateur introuvable');
@@ -48,30 +49,26 @@ console.log('Permissions de ce rôle :', user?.role?.permissions);
   
   
 
-login(user: Manager | Admin) {
-  console.log('User au login:', user);
-
-  const payload = {
-    sub: user.id,
-    roleId: user.role.id,
-    permissions: user.role.permissions.map((p) => p.titleEng),
-  };
-
-  console.log('Token payload dans auth service:', payload);
-  
-
-  return {
-    access_token: this.jwtService.sign(payload, { expiresIn: '1h' }), 
-
-    user: {
-      id: user.id,
-      nom: user.nom,
-      prenom: user.prenom,
-      email: user.email,
-      role: user.role.titleEng,
+  login(user: Manager | Admin) {
+    const payload = {
+      sub: user.id,
+      roleId: user.role.id,
       permissions: user.role.permissions.map((p) => p.titleEng),
-    },
-  };
-}
+      
 
+    };
+  
+    return {
+      access_token: this.jwtService.sign(payload, { expiresIn: '1h' }),
+      user: {
+        id: user.id,
+        nom: user.nom,
+        prenom: user.prenom,
+        email: user.email,
+        role: user.role.titleEng,
+        permissions: user.role.permissions.map((p) => p.titleEng),
+
+      }
+    };
+  }
 }

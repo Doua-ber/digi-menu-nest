@@ -1,21 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { ManagerService } from './manager.service';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { UpdateManagerDto } from './dto/update-manager.dto';
 import { PermissionsGuard } from 'src/permission/permissions.guard';
 import { Permissions } from 'src/permission/permissions.decorator';
 import { JwtAuthGuard } from 'src/auth/JwtAuthGuard';
+import { ManagerGuard } from './managerGuard';
 
 @Controller('manager')
 export class ManagerController {
   constructor(private readonly managerService: ManagerService) {}
   @Post()
-//@UseGuards(JwtAuthGuard, PermissionsGuard)
-//@Permissions('add manager')
+  @UseGuards(JwtAuthGuard)
+  
+ 
+  @Permissions('add manager')
+  async create(@Body() createManagerDto: CreateManagerDto, @Req() request) {
+    /*
+    const restaurantId = request.cookies['user']; // Récupérer l'ID du restaurant depuis les cookies
+    console.log('reeees:'+restaurantId)
+    */
+    return this.managerService.create(createManagerDto);
+  }
 
-create(@Body() createManagerDto: CreateManagerDto) {
-  return this.managerService.create(createManagerDto);
-}
 
   @Get(':id')
   @UseGuards(JwtAuthGuard) //just lezmou ykoun connecter

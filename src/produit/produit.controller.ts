@@ -1,37 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
 import { ProduitService } from './produit.service';
 import { CreateProduitDto } from './dto/create-produit.dto';
 import { UpdateProduitDto } from './dto/update-produit.dto';
+import { Request } from 'express';
+import { JwtAuthGuard } from 'src/auth/JwtAuthGuard';
+import { Produit } from './entities/produit.entity';
+import { ManagerGuard } from 'src/manager/managerGuard';
+import { AdminGuard } from 'src/admin/AdminGuard';
+
 
 @Controller('produit')
+
 export class ProduitController {
   constructor(private readonly produitService: ProduitService) {}
 
 
-  @Post()
-  create(@Body() createProduitDto: CreateProduitDto) {
-    return this.produitService.create(createProduitDto);
-  }
+@Post()
+@UseGuards(JwtAuthGuard)
+
+async create(@Body() createProduitDto: CreateProduitDto, @Req() req: any) {
+  const manager = req.user;
+  return await this.produitService.create(createProduitDto, manager, createProduitDto.restaurantId);
+}
+
+
+@Get('restaurant/:id')
+async getProductsByRestaurant(@Param('id') id: number): Promise<Produit[]> {
+  return this.produitService.findAllByRestaurant(id);
+}
+
+    
 
   @Get()
-  findAll() {
-    return this.produitService.findAll();
+  @UseGuards(JwtAuthGuard,AdminGuard)
+
+  async findAll(@Res({ passthrough: true }) response: Response) {
+    
+    
+
+    return await this.produitService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.produitService.findOne(+id);
+    async findOne(@Param('id') id: string) {
+    return await this.produitService.findOne(+id);
   }
 
-  
-
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProduitDto: UpdateProduitDto) {
-    return this.produitService.update(+id, updateProduitDto);
+  async update(@Param('id') id: string, @Body() updateProduitDto: UpdateProduitDto) {
+    return await this.produitService.update(+id, updateProduitDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.produitService.remove(+id);
+  @UseGuards(JwtAuthGuard,ManagerGuard)
+  async remove(@Param('id') id: string) {
+    return await this.produitService.remove(+id);
   }
+
 }

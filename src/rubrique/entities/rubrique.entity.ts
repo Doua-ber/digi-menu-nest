@@ -10,6 +10,6 @@ export class Rubrique {
           nomEng: string;
           @Column()
           nomAr: string;
-          @OneToMany(() => Produit, produit => produit.rubriques)
+          @OneToMany(() => Produit, produit => produit.rubrique)
           produits: Produit[];
 }

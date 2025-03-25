@@ -11,13 +11,14 @@ import { User } from 'src/user/entities/user.entity';
 @Injectable()
 export class ManagerService {
   constructor(
-    @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
+    
     @InjectRepository(Manager)
         private readonly managerRepository: Repository<Manager>,
       
-      @InjectRepository(Role) // Injection du repo des rôles ✅
-        private readonly roleRepository: Repository<Role>
+      @InjectRepository(Role) 
+        private readonly roleRepository: Repository<Role>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
       ) {}
     
       
@@ -49,13 +50,20 @@ const manager = this.managerRepository.create({
   role: role, // Assurez-vous que le rôle est bien affecté
   isOwner: createManagerDto.isOwner || false,
 });
-
-
-
       
         // Sauvegarde le Manager
         return await this.managerRepository.save(manager);
+        /*
+        // Associer le manager au restaurant
+        const resto = await this.restaurantRepository.findOne({ where: { id: createRestaurantDto.restaurantId } });
+        resto.managers = [manager];
+        await this.restaurantRepository.save(resto);
+        */
       }
+    
+        
+    
+    
       
 
       async findAll() {
@@ -94,5 +102,10 @@ const manager = this.managerRepository.create({
         await this.managerRepository.remove(manager);
         return { message: `${manager.nom} a été supprimé avec succès.` };
       }
+
+      async findByEmail(email: string): Promise<Manager | null> {
+        return await this.managerRepository.findOne({ where: { email } });
+      }
+      
     }
     

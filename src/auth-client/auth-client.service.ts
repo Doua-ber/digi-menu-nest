@@ -58,19 +58,14 @@ export class AuthClientService {
         // Charger l'utilisateur avec son rôle et les permissions du rôle
         const client = await this.clientRepository.findOne({
           where: { id: clientId },
-          relations: ['role', 'role.permissions'], // Charger les permissions à travers le rôle
         });
       
         if (!client) {
           throw new UnauthorizedException('Utilisateur non trouvé');
         }
-      
-     
-      
         return {
           id: client.id,
           name: client.nom + client.prenom,
-
           email: client.email,
         };
       }
