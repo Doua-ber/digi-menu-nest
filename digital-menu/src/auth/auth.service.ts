@@ -59,7 +59,7 @@ console.log('Permissions de ce rôle :', user?.role?.permissions);
     };
   
     return {
-      access_token: this.jwtService.sign(payload, { expiresIn: '1h' }),
+      auth_token: this.jwtService.sign(payload, { expiresIn: '1h' }),
       user: {
         id: user.id,
         nom: user.nom,

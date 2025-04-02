@@ -31,6 +31,9 @@ export class CreateProduitDto {
   @IsNumber()
   restaurantId: number;
 
+  @IsNumber()
+  ingredientsIds: number[];
+
 }
 
 

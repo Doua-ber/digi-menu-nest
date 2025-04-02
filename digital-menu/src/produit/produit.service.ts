@@ -3,10 +3,11 @@ import { CreateProduitDto } from './dto/create-produit.dto';
 import { UpdateProduitDto } from './dto/update-produit.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Produit } from './entities/produit.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Rubrique } from 'src/rubrique/entities/rubrique.entity';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { Manager } from 'src/manager/entities/manager.entity';
+import { Ingredient } from 'src/ingredient/entities/ingredient.entity';
 
 @Injectable()
 export class ProduitService {
@@ -17,6 +18,8 @@ export class ProduitService {
       private readonly rubriqueRepository: Repository<Rubrique>,
     @InjectRepository(Restaurant)
       private readonly restaurantRepository: Repository<Restaurant>,
+    @InjectRepository(Ingredient)
+      private readonly ingredientRepository: Repository<Ingredient>,
     
   ) {}
   
@@ -25,16 +28,15 @@ export class ProduitService {
     createProduitDto: CreateProduitDto,
     manager: Manager,
     selectedRestaurantId: number,
+    selectedIngredientsIds: number[],
   ): Promise<Produit> {
     // Vérifier si le restaurant appartient bien au manager
     const restaurant = await this.restaurantRepository.findOne({
       where: {
         id: selectedRestaurantId,
-        managers: {
-          id: manager.id,
-        },
+        managers: { id: manager.id },
       },
-      relations: ['managers'], // Pour que la vérification sur 'managers' fonctionne
+      relations: ['managers'], // Charger les managers pour la vérification
     });
   
     if (!restaurant) {
@@ -45,7 +47,7 @@ export class ProduitService {
     const rubrique = await this.rubriqueRepository.findOne({
       where: {
         id: createProduitDto.rubriqueId,
-        restaurant: { id: selectedRestaurantId }, // Vérification ici
+        restaurant: { id: selectedRestaurantId },
       },
     });
   
@@ -53,15 +55,28 @@ export class ProduitService {
       throw new NotFoundException(`Rubrique non trouvée ou n'appartient pas à ce restaurant`);
     }
   
+    // Vérifier si tous les ingrédients existent
+    const ingredients = await this.ingredientRepository.find({
+      where: {
+        id: In(selectedIngredientsIds),
+      },
+    });
+  
+    if (ingredients.length !== selectedIngredientsIds.length) {
+      throw new NotFoundException(`Un ou plusieurs ingrédients sont introuvables`);
+    }
+  
     // Création du produit
     const produit = this.produitRepository.create({
       ...createProduitDto,
       rubrique,
       restaurant,
+      ingredients,
     });
   
     return await this.produitRepository.save(produit);
   }
+  
   
     async findAllByRestaurant(restaurantId: number): Promise<Produit[]> {
       return await this.produitRepository.find({

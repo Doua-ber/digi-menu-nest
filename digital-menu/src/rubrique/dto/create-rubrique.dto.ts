@@ -6,6 +6,7 @@ export class CreateRubriqueDto {
     
       @IsString()
       nomAr: string;
+      
       @IsInt()
     @IsNotEmpty()
     restaurantId: number;

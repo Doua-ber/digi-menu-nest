@@ -1,4 +1,4 @@
-interface AuthenticatedRequest extends Request {
+/*interface AuthenticatedRequest extends Request {
     user: { id: number };
   }
-  
+  */

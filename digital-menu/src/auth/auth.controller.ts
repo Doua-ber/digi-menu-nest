@@ -23,7 +23,7 @@ async login(
   const loginResult = await this.authService.login(user);
 
   // Configuration du cookie
-  response.cookie('auth_token', loginResult.access_token, {
+  response.cookie('auth_token', loginResult.auth_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 3600000, // 1 heure (en millisecondes)

@@ -6,16 +6,10 @@ import { Repository } from 'typeorm';
 import { Client } from 'src/client/entities/client.entity';
 import { Request } from 'express'; 
 
-const cookieExtractor = (req: Request): string | null => {
-  if (req && req.cookies) {
-    console.log('Cookies reçus:', req.cookies);
-    return req.cookies['access_token'] || null;
-  }
-  return null;
-};
+
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtClientStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(Client) private clientRepository: Repository<Client>,
   ) {
@@ -34,4 +28,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     return client;
   }
+  
 }
+const cookieExtractor = (req: Request): string | null => {
+  if (req && req.cookies) {
+      console.log('Cookies reçus:', req.cookies);
+      return req.cookies['access_token'] || null;
+  }
+  console.log("Aucun cookie trouvé");
+  return null;
+};

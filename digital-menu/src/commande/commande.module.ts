@@ -3,7 +3,7 @@ import { CommandeService } from './commande.service';
 import { CommandeController } from './commande.controller';
 import { Commande } from './entities/commande.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Detail } from './entities/detail.entity';
+import { Detail } from 'src/detail/entities/detail.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Commande,Detail])],

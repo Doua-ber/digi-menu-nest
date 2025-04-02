@@ -24,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
 import { PermissionsGuard } from './permission/permissions.guard';
 import { RestaurantRequestModule } from './restaurant-request/restaurant-request.module';
 import { IngredientModule } from './ingredient/ingredient.module';
+import { DetailModule } from './detail/detail.module';
 
 @Module({
   imports: [
@@ -59,7 +60,8 @@ import { IngredientModule } from './ingredient/ingredient.module';
     AuthClientModule,
     AuthModule,
     RestaurantRequestModule,
-    IngredientModule, // AuthModule gère déjà AuthService
+    IngredientModule,
+    DetailModule, // AuthModule gère déjà AuthService
   ],
   controllers: [AppController],
   providers: [AppService,PermissionsGuard],

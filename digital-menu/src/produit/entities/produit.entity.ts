@@ -1,8 +1,8 @@
+import { Detail } from "../../detail/entities/detail.entity";
 import { Ingredient } from "../../ingredient/entities/ingredient.entity";
 import { Restaurant } from "../../restaurant/entities/restaurant.entity";
 import { Rubrique } from "../../rubrique/entities/rubrique.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
-import { Detail } from "../../commande/entities/detail.entity";
 
 @Entity("produits")
 export class Produit {

@@ -20,7 +20,7 @@ export class ProduitController {
 
 async create(@Body() createProduitDto: CreateProduitDto, @Req() req: any) {
   const manager = req.user;
-  return await this.produitService.create(createProduitDto, manager, createProduitDto.restaurantId);
+  return await this.produitService.create(createProduitDto, manager, createProduitDto.restaurantId, createProduitDto.ingredientsIds);
 }
 
 

@@ -13,8 +13,9 @@ import { LoginClientDto } from './dto/loginCient.dto';
 @Injectable()
 export class AuthClientService {
     constructor(
+      private readonly jwtService: JwtService,
         @InjectRepository(Client) private clientRepository: Repository<Client>,
-        private jwtService: JwtService,
+        
       ) {}
     
       async signup(signupDto: SignupClientDto): Promise<Client> {

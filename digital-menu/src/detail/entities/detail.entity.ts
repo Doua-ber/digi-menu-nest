@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from "typeorm";
-import { Commande } from "./commande.entity";
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, BeforeInsert, BeforeUpdate } from "typeorm";
 import { Produit } from "../../produit/entities/produit.entity";
+import { Commande } from "../../commande/entities/commande.entity";
 
 
 @Entity('details')
@@ -12,9 +12,11 @@ export class Detail {
     quantite: number;
 
     @Column("float")
-    prix: number;
+    totalLigne: number;
+    
+    
 
-    //Si une commande est supprimée, ses détails sont supprimés.
+    //Si une commande est supprimée, ses détails sont supprimés
     @ManyToOne(() => Commande, commande => commande.details, { onDelete: "CASCADE" })
     commande: Commande;
 
