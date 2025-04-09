@@ -12,6 +12,11 @@ export class PermissionController {
     return this.permissionService.create(createPermissionDto);
   }
 
+  @Get('scope/:scope')
+  findAllByScope(@Param('scope') scope: string) {
+    return this.permissionService.findAllByScope(scope);
+  }
+
   @Get()
   findAll() {
     return this.permissionService.findAll();

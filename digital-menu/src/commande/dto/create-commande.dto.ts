@@ -1,12 +1,12 @@
-import { IsBoolean, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsEnum, IsNumber, IsString } from "class-validator";
+import { StatutCommande } from "src/common/enums/statutCommande.enum";
 
 export class CreateCommandeDto {
     @IsNumber()
     totalPrix: number;
 
-    @IsString()
-    statut: string;
+   
 
     @IsBoolean()
-    isDelivered: boolean;
+    livraison: boolean;//true:sur place - false: à livré 
 }

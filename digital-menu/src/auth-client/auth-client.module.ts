@@ -15,7 +15,7 @@ import { AuthClientService } from './auth-client.service';
     imports: [
       PassportModule.register({ defaultStrategy: 'jwt' }), // Initialisation correcte de Passport
     JwtModule.register({
-      secret: '07e15142e4820f1aaea9c2502e93cc4c0595b3713f8adb9bcdb723852cbaed16e08891665fc6aac99760769161c68373248b542fc9bfeee444849e96fe2c7369', // Doit correspondre à la clé utilisée dans JwtStrategy
+      secret: '07e15142e4820f1aaea9c2502e93cc4c0595b3713f8adb9bcdb723852cbaed16e08891665fc6aac99760769161c68373248b542fc9bfeee444849e96fe2c7369', 
       signOptions: { expiresIn: '1h' },
     }),
 

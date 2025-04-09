@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Request, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request, Res, UnauthorizedException } from '@nestjs/common';
 import { SignupClientDto } from './dto/SignupClient.dto';
 import { LoginClientDto } from './dto/loginCient.dto';
 import { AuthClientService } from './auth-client.service';
@@ -6,7 +6,9 @@ import { Response } from 'express';
 import { JwtClientAuthGuard } from './jwt-authClient.guard';
 
 @Controller('auth-client')
-export class AuthClientController {constructor(private authClientService: AuthClientService) {}
+export class AuthClientController {
+  constructor(private authClientService: AuthClientService)
+  {}
 
 @Post('signup')
 signup(@Body() signupDto: SignupClientDto) {
@@ -14,31 +16,41 @@ signup(@Body() signupDto: SignupClientDto) {
 }
 
 @Post('login')
-  async login(@Body() loginDto: LoginClientDto, @Res({ passthrough: true }) response: Response) {
-    const loginResult = await this.authClientService.login(loginDto);
+async login(
+  @Body() loginDto: LoginClientDto,
+  @Res({ passthrough: true }) response: Response,
+) {
+  const loginResult = await this.authClientService.login(loginDto);
 
-    // Configuration du cookie
-    response.cookie('access_token', loginResult.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',  // En production, utilise HTTPS
-      maxAge: 3600000, // 1 heure (en millisecondes)
-      sameSite: 'lax', // Préférable d'utiliser "lax" pour éviter des problèmes CORS
-    });
+  // Configuration du cookie
+  response.cookie('access_token', loginResult.access_token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 3600000,
+    sameSite: 'lax',
+  });
 
-    return { message: 'Login successful' };  // Tu peux aussi renvoyer d'autres informations selon tes besoins
-  }
-
-
-@UseGuards(JwtClientAuthGuard)
-@Get('profile')
-async getProfile(@Request() req) {
-  const clientId = req.client.id;
-  return this.authClientService.getProfile(clientId);
+  // Retourne directement les données du client
+  return loginResult.client; // ou loginResult.user selon ta logique interne
 }
 
+@UseGuards(JwtClientAuthGuard)
+
+  @Get('profile')
+  async getProfile(@Request() req) {
+    console.log('Client connecté dans le contrôleur:', req.client.id);  
+    if (!req.client) {
+      throw new UnauthorizedException('Client non authentifié');
+    }
+    
+    const clientId = req.client.id;
+    console.log('ID du client récupéré:', clientId);
+    return this.authClientService.getProfile(clientId);
+  }
+  
 
 
-@UseGuards(JwtClientAuthGuard)  // S'assurer que l'utilisateur est authentifié pour faire un logout
+
 @Post('logout')
 async logout(@Res({ passthrough: true }) response: Response) {
   response.clearCookie('access_token', { 

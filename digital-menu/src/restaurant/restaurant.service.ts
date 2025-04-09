@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,22 +16,40 @@ export class RestaurantService {
     return 'This action adds a new restaurant';
   }
 
-  findAll() {
-    return `This action returns all restaurant`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} restaurant`;
-  }
-
-  update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
-    return `This action updates a #${id} restaurant`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} restaurant`;
-  }
-
   
-  
+
+  async findAll(): Promise<Restaurant[]> {
+    return await this.restaurantRepository.find({
+      relations: ['categorie', 'admins', 'produits', 'commandes','rubriques'],
+    });
+  }
+
+  async findOne(id: number): Promise<Restaurant> {
+    const restaurant = await this.restaurantRepository.findOne({
+      where: { id },
+      relations: ['categorie', 'admins', 'produits', 'commandes'],
+    });
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with ID ${id} not found`);
+    }
+    return restaurant;
+  }
+
+  async update(id: number, updateRestaurantDto: UpdateRestaurantDto): Promise<Restaurant> {
+    const restaurant = await this.restaurantRepository.preload({
+      id,
+      ...updateRestaurantDto,
+    });
+
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with ID ${id} not found`);
+    }
+
+    return await this.restaurantRepository.save(restaurant);
+  }
+
+  async remove(id: number): Promise<void> {
+    const restaurant = await this.findOne(id);
+    await this.restaurantRepository.remove(restaurant);
+  }
 }

@@ -3,7 +3,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class PermissionService {
@@ -20,6 +20,14 @@ export class PermissionService {
     return this.permissionsRepository.find();
     return `This action returns all permission`;
   }
+  async findAllByScope(scope: string): Promise<Permission[]> {
+    return this.permissionsRepository.find({
+      where: { scope: Like(`%${scope}%`) },
+    });
+  }
+
+  
+  
 
   findOne(id: number) {
     return `This action returns a #${id} permission`;

@@ -2,7 +2,10 @@ import { RestaurantRequest } from "../../restaurant-request/entities/restaurant-
 import { Commande } from "../../commande/entities/commande.entity";
 import { Restaurant } from "../../restaurant/entities/restaurant.entity";
 import { User } from "../../user/entities/user.entity";
-import { Entity, Column, ManyToMany, JoinTable, OneToMany, ChildEntity, ManyToOne } from "typeorm";
+import { Entity, Column, ManyToMany, OneToMany, ChildEntity } from "typeorm";
+//
+
+
 
 @ChildEntity() 
 export class Manager extends User {
@@ -10,22 +13,21 @@ export class Manager extends User {
   isOwner: boolean;
 
   @ManyToMany(() => Restaurant, restaurant => restaurant.managers)
-    restaurants: Restaurant[];
+  restaurants: Restaurant[];
 
-  @OneToMany(() => Commande, commande => commande.managers)
-  commandes: Commande[];
+    @ManyToMany(() => Commande, commande => commande.managers)
+    commandes: Commande[];
+    
 
   
   @OneToMany(() => RestaurantRequest, (request) => request.manager)
   restaurantRequests: RestaurantRequest[]; // Les demandes faites par ce manager
-  
-  /*
-  //association reflexive
-  @ManyToOne(() => Manager, manager => manager.subManagers, { nullable: true, onDelete: "SET NULL" })
-  parentManager: Manager;
 
-  @OneToMany(() => Manager, manager => manager.parentManager)
-  subManagers: Manager[];
- */
-  
+  // Utilisation de require pour éviter l'importation circulaire
+  //pour ne pas causé une boucle d’importation circulaire entre Role et Manager
+  @OneToMany(
+    () => require('../../role/entities/role.entity').Role,
+    (role: any) => role.gerant
+  )
+  rolesGeres: import('../../role/entities/role.entity').Role[];
 }

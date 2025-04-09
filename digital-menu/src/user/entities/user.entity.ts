@@ -1,4 +1,3 @@
-import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { Role } from '../../role/entities/role.entity';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 

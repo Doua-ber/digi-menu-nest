@@ -1,4 +1,4 @@
-export enum Ville {
+export enum Gouvernorat {
     SOUSSE = "Sousse",
     MONASTIR = "Monastir",
     MAHDIA = "Mahdia",

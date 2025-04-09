@@ -125,6 +125,8 @@ return savedManager;
       async findByEmail(email: string): Promise<Manager | null> {
         return await this.managerRepository.findOne({ where: { email } });
       }
+
+      
       
     }
     

@@ -2,7 +2,8 @@ import { Detail } from "../../detail/entities/detail.entity";
 import { Client } from "../../client/entities/client.entity";
 import { Manager } from "../../manager/entities/manager.entity";
 import { Restaurant } from "../../restaurant/entities/restaurant.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { StatutCommande } from "../../common/enums/statutCommande.enum";
 
 @Entity('commandes')
 export class Commande {
@@ -14,11 +15,16 @@ export class Commande {
       @Column("float")
     totalPrix: number;
     
-      @Column()
-      statut: string;
+    @Column({
+      type: 'enum',
+      enum: StatutCommande,
+      default: StatutCommande.EN_ATTENTE,
+    })
+    statut: StatutCommande;
+    
     
       @Column()
-      isDelivered: boolean;
+      livraison: boolean; // true: sur place - false: à livré
     
       @CreateDateColumn({ type: "timestamp" })
         createdAt: Date;
@@ -29,10 +35,15 @@ export class Commande {
 //Si un restaurant est supprimé-> les commandes restent mais restaurantId=NULL(onDelete: "SET NULL" ).
     @ManyToOne(() => Restaurant, restaurant => restaurant.commandes, { onDelete: "SET NULL" })
     restaurant: Restaurant;
-    @ManyToOne(() => Manager, manager => manager.commandes)
-    managers: Manager[];
+    
+    @ManyToMany(() => Manager, manager => manager.commandes, { cascade: true })
+@JoinTable()
+managers: Manager[];
+
     
     @OneToMany(() => Detail, detail => detail.commande, { cascade: true })
     details: Detail[];
       
 }
+
+

@@ -41,33 +41,54 @@ export class AuthClientService {
         return this.clientRepository.save(client);
       }
     
-      async login(loginDto: LoginClientDto): Promise<{ access_token: string }> {
+      
+      async login(loginDto: LoginClientDto): Promise<{ access_token: string; client: any }> {
         const { email, motDePasse } = loginDto;
+      
         const client = await this.clientRepository.findOne({ where: { email } });
-    
-        if (!client || !(await bcrypt.compare(motDePasse, client.motDePasse))) {
-          throw new UnauthorizedException('Email ou mot de passe incorrect');
+        if (!client) {
+          throw new UnauthorizedException('Email ou mot de passe invalide');
         }
-    
-        const payload = { id: client.id, email: client.email };
-        const access_token = this.jwtService.sign(payload);
-    
-        return { access_token };
+      
+        const passwordIsValid = await bcrypt.compare(motDePasse, client.motDePasse);
+        if (!passwordIsValid) {
+          throw new UnauthorizedException('Email ou mot de passe invalide');
+        }
+      
+        const payload = { sub: client.id };
+const auth_token = this.jwtService.sign(payload, { expiresIn: '1h' });
+
+console.log('Token JWT généré:', auth_token);  // Affiche le token généré pour voir si tout est correct
+
+return {
+  access_token: auth_token,  // Utilise `access_token` pour être cohérent avec le cookie
+  client: {
+    id: client.id,
+    nom: client.nom,
+    prenom: client.prenom,
+    email: client.email,
+  },
+};
+
       }
+      
+      
     
       async getProfile(clientId: number) {
-        // Charger l'utilisateur avec son rôle et les permissions du rôle
-        const client = await this.clientRepository.findOne({
-          where: { id: clientId },
-        });
+        console.log('Recherche du client avec ID:', clientId);
+        const client = await this.clientRepository.findOne({ where: { id: clientId } });
       
         if (!client) {
           throw new UnauthorizedException('Utilisateur non trouvé');
         }
+        
+        console.log('Client trouvé dans la base de données:', client);
+      
         return {
           id: client.id,
-          name: client.nom + client.prenom,
+          name: client.nom + ' ' + client.prenom,
           email: client.email,
         };
       }
+      
         }

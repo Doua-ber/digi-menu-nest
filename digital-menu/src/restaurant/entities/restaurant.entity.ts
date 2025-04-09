@@ -1,11 +1,12 @@
-import { Ville } from "src/common/enums/ville.enum";
 import { Admin } from "../../admin/entities/admin.entity";
 import { Categorie } from "../../categorie/entities/categorie.entity";
 import { Commande } from "../../commande/entities/commande.entity";
 import { Manager } from "../../manager/entities/manager.entity";
 import { Produit } from "../../produit/entities/produit.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
-import { Rubrique } from "src/rubrique/entities/rubrique.entity";
+import { Rubrique } from "../../rubrique/entities/rubrique.entity";
+import { Gouvernorat } from "../../common/enums/gouvernorat.enum";
+import { Role } from "../../role/entities/role.entity";
 @Entity("restaurants")
 export class Restaurant {
   @PrimaryGeneratedColumn()
@@ -14,8 +15,8 @@ export class Restaurant {
   @Column()
   nom: string;
 
-  @Column({ type: "enum", enum: Ville })
-  ville: Ville;
+  @Column({ type: "enum", enum: Gouvernorat })
+  gouvernorat: Gouvernorat;
 
   @Column()
   adresseEng: string;
@@ -36,15 +37,19 @@ export class Restaurant {
   admins: Admin[];
 
   @ManyToMany(() => Manager, manager => manager.restaurants)
-    @JoinTable({ name: 'restaurants_managers' })
-    managers: Manager[];
+  @JoinTable({ name: 'restaurants_managers' })
+  managers: Manager[];
 
-  @ManyToOne(() => Categorie, (categorie) => categorie.restaurants, { onDelete: "CASCADE" })
+  //agregation
+  @ManyToOne(() => Categorie, (categorie) => categorie.restaurants)
   categorie: Categorie;
 
   @OneToMany(() => Produit, (produit) => produit.restaurant, { cascade: true })
   produits: Produit[];
   @OneToMany(() => Rubrique, rubrique => rubrique.restaurant)
 rubriques: Rubrique[];
+
+@OneToMany(() => Role, (roles) => roles.restaurant)
+  roles: Role[];
 
 }

@@ -22,7 +22,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           console.log(' Aucune requête ou cookies introuvables');
           return null;
         }
-        console.log('Token extrait des cookies:', req.cookies['auth_token']);
+  
+        
         return req.cookies['auth_token']; 
       },
       secretOrKey: 'c16e2ca7ba8cede8d69b58f8b48eb3bb8e05d92bce2744cb11b68f7e7faf37c1dba49d15d477e6f3d77db0bbac96c287215257ec97507df84e29e387cd890de6',

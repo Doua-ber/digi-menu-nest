@@ -1,4 +1,4 @@
-import { Ville } from "src/common/enums/ville.enum";
+import { Gouvernorat } from "../../common/enums/gouvernorat.enum";
 import { Categorie } from "../../categorie/entities/categorie.entity";
 import { Manager } from "../../manager/entities/manager.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -21,8 +21,8 @@ prenom: string;
   @Column()
   nomRestaurant: string;
 
-  @Column({ type: "enum", enum: Ville })
-  ville: Ville;
+  @Column({ type: "enum", enum: Gouvernorat })
+  gouvernorat: Gouvernorat;
 
   @Column()
   adresseEng: string;
@@ -40,12 +40,18 @@ prenom: string;
   @Column({ default: false })
   isApproved: boolean; // demande est approuvée ou nn
 
+  @Column({ default: false })
+  isRejected: boolean;
+
+  
+
  
 
   @ManyToOne(() => Manager, (manager) => manager.restaurantRequests)
   @JoinColumn({ name: 'managerId' })
   manager: Manager; // Le manager qui a fait la demande
 
+  //agrégation
   @ManyToOne(() => Categorie, (categorie) => categorie.restaurantRequests)
   @JoinColumn({ name: 'categorieId' })
   categorie: Categorie;

@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { RestaurantRequest } from './entities/restaurant-request.entity';
 import { JwtAuthGuard } from 'src/auth/JwtAuthGuard';
 import { AdminGuard } from 'src/admin/AdminGuard';
-import { Ville } from 'src/common/enums/ville.enum';
+import { Gouvernorat } from 'src/common/enums/gouvernorat.enum';
 
 @Controller('restaurant-request')
 export class RestaurantRequestController {
@@ -49,7 +49,7 @@ export class RestaurantRequestController {
       email: string,
       motDePasse: string,
       nomRestaurant: string,
-      ville:Ville,
+      gouvernorat:Gouvernorat,
       adresseEng: string,
       adresseAr: string,
       categorieId : number

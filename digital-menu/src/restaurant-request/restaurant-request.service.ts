@@ -86,7 +86,7 @@ export class RestaurantRequestService {
     // Créer le restaurant
     const restaurant = this.restaurantRepository.create({
       nom: request.nomRestaurant,
-      ville: request.ville,
+      gouvernorat: request.gouvernorat,
       adresseEng: request.adresseEng,
       adresseAr: request.adresseAr,
       qrCode: `QR_CODE_${request.nomRestaurant}_${Date.now()}`,
@@ -140,23 +140,10 @@ export class RestaurantRequestService {
     request.manager = manager;
     await this.restaurantRequestRepository.save(request);
   
-    // Planifier la suppression après 15 jours de la validation
-    setTimeout(async () => {
-      const existingRequest = await this.restaurantRequestRepository.findOne({
-        where: { id: requestId },
-      });
   
-      if (existingRequest && existingRequest.validatedAt) {
-        const now = new Date();
-        const diffInMillis = now.getTime() - new Date(existingRequest.validatedAt).getTime();
-        const diffInDays = diffInMillis / (1000 * 3600 * 24); // Convertir en jours
-  
-        if (diffInDays >= 15) {
-          await this.restaurantRequestRepository.remove(existingRequest);
-          console.log(`Demande ID ${requestId} supprimée après 15 jours de validation`);
-        }
-      }
-    }, 15 * 24 * 60 * 60 * 1000); // 15 jours en millisecondes
+    //supprimer la demande si elle est eccepté(pour éviter la redandance)
+    await this.restaurantRequestRepository.remove(request);
+          console.log(`La demande ${requestId} est supprimée avec succes`);
   
     console.log('Demande trouvée :', request);
     console.log('Catégorie associée :', request.categorie);
@@ -169,23 +156,25 @@ export class RestaurantRequestService {
       restaurant: savedRestaurant,
     };
   }
-  
   async rejectRequest(requestId: number): Promise<{ message: string }> {
-    // Trouver la demande
     const request = await this.restaurantRequestRepository.findOne({
       where: { id: requestId },
     });
   
     if (!request) {
-      return { message: 'ID introuvé' }; // Retourner un message d'erreur si l'ID est introuvable
+      return { message: 'ID introuvable' };
     }
   
-    // Supprimer la demande
-    await this.restaurantRequestRepository.remove(request);
+    // Archiver la demande (la marquer comme rejetée)
+    request.isRejected = true;
   
-    // Retourner un message de succès
-    return { message: 'Demande rejetée avec succès' };
+    await this.restaurantRequestRepository.save(request);
+  
+    return { message: 'Demande rejetée et archivée avec succès.' };
   }
+  
+  
+
   async getAllRequests(): Promise<RestaurantRequest[]> {
     return this.restaurantRequestRepository.find();
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Commande } from 'src/commande/entities/commande.entity';
 import { Produit } from 'src/produit/entities/produit.entity';
@@ -19,20 +19,36 @@ export class DetailService {
     ) {}
 
     async addProduitToCommande(commandeId: number, produitId: number, quantite: number): Promise<Detail> {
-      const commande = await this.commandeRepository.findOne({ where: { id: commandeId } });
-      const produit = await this.produitRepository.findOne({ where: { id: produitId } });
+        const commande = await this.commandeRepository.findOne({
+            where: { id: commandeId },
+            relations: ['restaurant'],
+        });
+        
+       
+        
+        if (!commande) {
+            throw new NotFoundException(`Commande avec ID ${commandeId} non trouvée !`);
+        }
+        
+      const produit = await this.produitRepository.findOne({
+        where: { id: produitId },
+        relations: ['restaurant']
+    });
+
+    if (!produit || produit.restaurant.id !== commande.restaurant.id) {
+        throw new NotFoundException(`Produit non trouvé ou n'appartient pas à ce restaurant.`);
+    }
       console.log("Produit trouvé :", produit);
 
-      if (!commande) {
-          throw new Error(`Commande avec ID ${commandeId} non trouvée !`);
-      }
+      
+      
       
       if (!produit) {
-          throw new Error(`Produit avec ID ${produitId} non trouvé !`);
+          throw new NotFoundException(`Produit avec ID ${produitId} non trouvé !`);
       }
   
       if (produit.prix === undefined || produit.prix === null) {
-          throw new Error(`Le produit ${produitId} ne possède pas de prix valide !`);
+          throw new NotFoundException(`Le produit ${produitId} ne possède pas de prix valide !`);
       }
   
   
@@ -43,7 +59,19 @@ export class DetailService {
           totalLigne: produit.prix * quantite, 
       });
   
-      return this.detailRepository.save(detail);
+      const savedDetail = await this.detailRepository.save(detail);
+
+    // 🔄 Mise à jour du totalPrix de la commande
+    const allDetails = await this.detailRepository.find({
+        where: { commande: { id: commandeId } }
+    });
+
+    const newTotalPrix = allDetails.reduce((acc, curr) => acc + curr.totalLigne, 0);
+
+    commande.totalPrix = newTotalPrix;
+    await this.commandeRepository.save(commande);
+
+    return savedDetail;
   }
   
 

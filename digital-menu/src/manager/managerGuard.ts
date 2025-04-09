@@ -26,5 +26,3 @@ export class ManagerGuard implements CanActivate {
     return true;
   }
 }
-
-     

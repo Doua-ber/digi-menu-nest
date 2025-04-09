@@ -30,6 +30,7 @@ export class ProduitService {
     selectedRestaurantId: number,
     selectedIngredientsIds: number[],
   ): Promise<Produit> {
+    
     // Vérifier si le restaurant appartient bien au manager
     const restaurant = await this.restaurantRepository.findOne({
       where: {
@@ -42,8 +43,21 @@ export class ProduitService {
     if (!restaurant) {
       throw new NotFoundException(`Restaurant non trouvé ou n'appartient pas à ce manager`);
     }
+
+    // Vérifier si le produit existe déja dans ce resto
+    const existingProduit = await this.produitRepository.findOne({
+      where: [
+        { nomEng: createProduitDto.nomEng, restaurant: { id: selectedRestaurantId } },
+        { nomAr: createProduitDto.nomAr, restaurant: { id: selectedRestaurantId } },
+      ],
+    });
+
+    if (existingProduit) {
+      throw new NotFoundException(`Le produit existe déjà dans ce restaurant`);
+    }
+
   
-    // Vérifier si la rubrique appartient bien au restaurant sélectionné
+    // Vérifier si la rubrique appartient bien au resto sélectionné
     const rubrique = await this.rubriqueRepository.findOne({
       where: {
         id: createProduitDto.rubriqueId,
@@ -107,21 +121,35 @@ export class ProduitService {
   
 
     
-    async update(id: number, updateProduitDto: UpdateProduitDto): Promise<Produit | null> {
-      
-      const produit = await this.produitRepository.findOne({ 
-        where: { id },
-        relations: ['rubrique', 'restaurant'] 
-      });
-      if (!produit) {
-        throw new NotFoundException(`Produit avec l'ID ${id} non trouvé`);
-      }
-      await this.produitRepository.update(id, updateProduitDto);
-      return await this.produitRepository.findOne({ 
-        where: { id },
-        relations: ['rubrique', 'restaurant'] 
-      });
+  async update(id: number, updateProduitDto: UpdateProduitDto): Promise<Produit | null> {
+    const produit = await this.produitRepository.findOne({ 
+      where: { id },
+      relations: ['rubrique', 'restaurant'] 
+    });
+  
+    if (!produit) {
+      throw new NotFoundException(`Produit avec l'ID ${id} non trouvé`);
     }
+  
+    // On extrait rubriqueId et le reste
+    const { rubriqueId, ...rest } = updateProduitDto;
+  
+    // Construction de l'objet à mettre à jour
+    const updateData: any = { ...rest };
+  
+    // S'il y a un rubriqueId, on l'affecte à la relation
+    if (rubriqueId !== undefined) {
+      updateData.rubrique = { id: rubriqueId };
+    }
+  
+    await this.produitRepository.update(id, updateData);
+  
+    return await this.produitRepository.findOne({ 
+      where: { id },
+      relations: ['rubrique', 'restaurant'] 
+    });
+  }
+  
 
   async remove(id: number): Promise<void> {
     await this.produitRepository.delete(id);

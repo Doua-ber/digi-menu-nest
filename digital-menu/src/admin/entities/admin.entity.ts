@@ -1,6 +1,6 @@
-import { RestaurantRequest } from "src/restaurant-request/entities/restaurant-request.entity";
 import { Restaurant } from "../../restaurant/entities/restaurant.entity";
 import { User } from "../../user/entities/user.entity";
+
 import { Entity, Column, ManyToMany, JoinTable, ChildEntity, OneToMany } from "typeorm";
 
 @ChildEntity() 
